@@ -147,7 +147,6 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
     struct Referral {
         address residentAddress;
         uint256 totalReferred;
-        uint256 totalEarn;
     }
 
     constructor(
@@ -222,10 +221,6 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
             referrals[_referralId].totalReferred = referrals[_referralId]
                 .totalReferred
                 .add(1);
-
-            referrals[_referralId].totalEarn = referrals[_referralId]
-                .totalEarn
-                .add((referralFeeShare.mul(numberWigoToRegister)).div(100));
         } else {
             // Burn WIGO tokens from this contract
             IMasterFarmer(masterFarmer).wigoBurn(numberWigoToRegister);
@@ -249,8 +244,7 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
         // Add data to the struct for newResidentId
         referrals[newResidentId] = Referral({
             residentAddress: _msgSender(),
-            totalReferred: 0,
-            totalEarn: 0
+            totalReferred: 0
         });
 
         // Update registration status
@@ -784,15 +778,14 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
     function getReferralData(uint256 _referralId)
         external
         view
-        returns (uint256, uint256)
+        returns (uint256)
     {
         require(_referralId != 0, "Referral doesn't exist");
 
         address referralAddress = referrals[_referralId].residentAddress;
         require(hasRegistered[referralAddress], "Referral doesn't exist");
         return (
-            referrals[_referralId].totalReferred,
-            referrals[_referralId].totalEarn
+            referrals[_referralId].totalReferred
         );
     }
 }
