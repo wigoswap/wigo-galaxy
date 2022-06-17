@@ -344,8 +344,29 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
             numberWigoToUpdate
         );
 
-        // Burn WIGO tokens from this contract
-        IMasterFarmer(masterFarmer).wigoBurn(numberWigoToUpdate);
+        if (
+            residents[_msgSender()].referral != 0 &&
+            residents[
+                referrals[residents[_msgSender()].referral].residentAddress
+            ].isActive
+        ) {
+            address referralAddress = referrals[
+                residents[_msgSender()].referral
+            ].residentAddress;
+            // Send rewards to referral
+            wigoToken.safeTransfer(
+                referralAddress,
+                (referralFeeShare.mul(numberWigoToUpdate)).div(100)
+            );
+
+            // Burn WIGO tokens from this contract
+            IMasterFarmer(masterFarmer).wigoBurn(
+                ((100 - referralFeeShare).mul(numberWigoToUpdate)).div(100)
+            );
+        } else {
+            // Burn WIGO tokens from this contract
+            IMasterFarmer(masterFarmer).wigoBurn(numberWigoToUpdate);
+        }
 
         // Interface to deposit the NFT contract
         IERC721 nftCurrentToken = IERC721(currentAddress);
@@ -387,8 +408,29 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
             numberWigoToReactivate
         );
 
-        // Burn WIGO tokens from this contract
-        IMasterFarmer(masterFarmer).wigoBurn(numberWigoToReactivate);
+        if (
+            residents[_msgSender()].referral != 0 &&
+            residents[
+                referrals[residents[_msgSender()].referral].residentAddress
+            ].isActive
+        ) {
+            address referralAddress = referrals[
+                residents[_msgSender()].referral
+            ].residentAddress;
+            // Send rewards to referral
+            wigoToken.safeTransfer(
+                referralAddress,
+                (referralFeeShare.mul(numberWigoToReactivate)).div(100)
+            );
+
+            // Burn WIGO tokens from this contract
+            IMasterFarmer(masterFarmer).wigoBurn(
+                ((100 - referralFeeShare).mul(numberWigoToReactivate)).div(100)
+            );
+        } else {
+            // Burn WIGO tokens from this contract
+            IMasterFarmer(masterFarmer).wigoBurn(numberWigoToReactivate);
+        }
 
         // Transfer NFT to contract
         nftToken.safeTransferFrom(_msgSender(), address(this), _tokenId);
@@ -795,11 +837,19 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
         external
         view
         onlyReferral
-        returns (address)
+        returns (
+            address,
+            bool,
+            uint256
+        )
     {
         require(hasRegistered[_residentAddress], "Resident doesn't exist");
         return (
-            referrals[residents[_residentAddress].referral].residentAddress
+            referrals[residents[_residentAddress].referral].residentAddress,
+            residents[
+                referrals[residents[_residentAddress].referral].residentAddress
+            ].isActive,
+            referrals[residents[_residentAddress].residentId].totalReferred
         );
     }
 }
