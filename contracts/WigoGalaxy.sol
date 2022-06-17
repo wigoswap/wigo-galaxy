@@ -19,7 +19,6 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
 
     bytes32 public constant NFT_ROLE = keccak256("NFT_ROLE");
     bytes32 public constant POINT_ROLE = keccak256("POINT_ROLE");
-    bytes32 public constant REFERRAL_ROLE = keccak256("REFERRAL_ROLE");
     bytes32 public constant SPECIAL_ROLE = keccak256("SPECIAL_ROLE");
     uint256 public constant MAX_REFERRAL_SHARE = 80; // 80%
 
@@ -118,12 +117,6 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
     // Modifier for point roles
     modifier onlyPoint() {
         require(hasRole(POINT_ROLE, _msgSender()), "Not a point admin");
-        _;
-    }
-
-    // Modifier for referral roles
-    modifier onlyReferral() {
-        require(hasRole(REFERRAL_ROLE, _msgSender()), "Not a referral admin");
         _;
     }
 
@@ -850,7 +843,6 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
     function getReferralData(address _residentAddress)
         external
         view
-        onlyReferral
         returns (address, bool, uint256)
     {
         require(hasRegistered[_residentAddress], "Resident doesn't exist");
