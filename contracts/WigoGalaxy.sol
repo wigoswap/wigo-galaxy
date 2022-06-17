@@ -184,7 +184,7 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
         require(hasRole(NFT_ROLE, _nftAddress), "NFT address invalid");
         if (_referralId != 0) {
             address referralAddress = referrals[_referralId].residentAddress;
-            if(!hasRegistered[referralAddress]) {
+            if(!hasRegistered[referralAddress] || !residents[referralAddress].isActive) {
                 _referralId = 0;
             }
         }
