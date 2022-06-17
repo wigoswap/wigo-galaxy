@@ -775,7 +775,6 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
             address,
             uint256,
             uint256,
-            uint256,
             bool
         )
     {
@@ -787,7 +786,6 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
             residents[_residentAddress].nftAddress,
             residents[_residentAddress].tokenId,
             residents[_residentAddress].referral,
-            referrals[residents[_residentAddress].residentId].totalReferred,
             residents[_residentAddress].isActive
         );
     }
@@ -831,17 +829,29 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
     }
 
     /**
+     * @dev Check total referred by resident
+     */
+    function getTotalReferred(address _residentAddress)
+        external
+        view
+        returns (
+            uint256
+        )
+    {
+        require(hasRegistered[_residentAddress], "Resident doesn't exist");
+        return (
+            referrals[residents[_residentAddress].residentId].totalReferred
+        );
+    }
+
+    /**
      * @dev Check a referral data
      */
     function getReferralData(address _residentAddress)
         external
         view
         onlyReferral
-        returns (
-            address,
-            bool,
-            uint256
-        )
+        returns (address, bool, uint256)
     {
         require(hasRegistered[_residentAddress], "Resident doesn't exist");
         return (
@@ -849,7 +859,7 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
             residents[
                 referrals[residents[_residentAddress].referral].residentAddress
             ].isActive,
-            referrals[residents[_residentAddress].residentId].totalReferred
+            referrals[residents[_residentAddress].referral].totalReferred
         );
     }
 }
