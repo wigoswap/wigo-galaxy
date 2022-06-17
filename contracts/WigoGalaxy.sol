@@ -19,6 +19,7 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
 
     bytes32 public constant NFT_ROLE = keccak256("NFT_ROLE");
     bytes32 public constant POINT_ROLE = keccak256("POINT_ROLE");
+    bytes32 public constant REFERRAL_ROLE = keccak256("REFERRAL_ROLE");
     bytes32 public constant SPECIAL_ROLE = keccak256("SPECIAL_ROLE");
     uint256 public constant MAX_REFERRAL_SHARE = 80; // 80%
 
@@ -120,6 +121,12 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
         _;
     }
 
+    // Modifier for referral roles
+    modifier onlyReferral() {
+        require(hasRole(REFERRAL_ROLE, _msgSender()), "Not a referral admin");
+        _;
+    }
+
     // Modifier for special roles
     modifier onlySpecial() {
         require(hasRole(SPECIAL_ROLE, _msgSender()), "Not a special admin");
@@ -183,7 +190,10 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
         require(hasRole(NFT_ROLE, _nftAddress), "NFT address invalid");
         if (_referralId != 0) {
             address referralAddress = referrals[_referralId].residentAddress;
-            if(!hasRegistered[referralAddress] || !residents[referralAddress].isActive) {
+            if (
+                !hasRegistered[referralAddress] ||
+                !residents[referralAddress].isActive
+            ) {
                 _referralId = 0;
             }
         }
@@ -485,7 +495,9 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
         uint256 _campaignId
     ) external onlyPoint {
         // Increase the number of points for the planet
-        planets[_planetId].numberPoints = planets[_planetId].numberPoints.add(_numberPoints);
+        planets[_planetId].numberPoints = planets[_planetId].numberPoints.add(
+            _numberPoints
+        );
 
         emit PlanetPointIncrease(_planetId, _numberPoints, _campaignId);
     }
@@ -529,7 +541,9 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
         onlyPoint
     {
         // Decrease the number of points for the planet
-        planets[_planetId].numberPoints = planets[_planetId].numberPoints.sub(_numberPoints);
+        planets[_planetId].numberPoints = planets[_planetId].numberPoints.sub(
+            _numberPoints
+        );
     }
 
     /**
@@ -719,6 +733,7 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
             address,
             uint256,
             uint256,
+            uint256,
             bool
         )
     {
@@ -730,6 +745,7 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
             residents[_residentAddress].nftAddress,
             residents[_residentAddress].tokenId,
             residents[_residentAddress].referral,
+            referrals[residents[_residentAddress].residentId].totalReferred,
             residents[_residentAddress].isActive
         );
     }
@@ -775,17 +791,15 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
     /**
      * @dev Check a referral data
      */
-    function getReferralData(uint256 _referralId)
+    function getReferralData(address _residentAddress)
         external
         view
-        returns (uint256)
+        onlyReferral
+        returns (address)
     {
-        require(_referralId != 0, "Referral doesn't exist");
-
-        address referralAddress = referrals[_referralId].residentAddress;
-        require(hasRegistered[referralAddress], "Referral doesn't exist");
+        require(hasRegistered[_residentAddress], "Resident doesn't exist");
         return (
-            referrals[_referralId].totalReferred
+            referrals[residents[_residentAddress].referral].residentAddress
         );
     }
 }
