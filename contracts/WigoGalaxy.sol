@@ -27,7 +27,7 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
     uint256 public numberWigoToRegister;
     uint256 public numberWigoToUpdate;
     uint256 public numberPlanets;
-    uint256 public referralFeeShare = 40; // 40%
+    uint256 public referralFeeShare = 80; // 80%
     uint256 public referralPointShare = 10; // 10%
 
     mapping(address => bool) public hasRegistered;
