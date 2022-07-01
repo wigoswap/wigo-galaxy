@@ -43,7 +43,7 @@ contract WiggyFactory is Ownable {
     // Map the token number to URI
     mapping(uint8 => string) private wiggyIdURIs;
 
-    // Event to notify when NFT is successfully minted
+    // Event to notify when NFT is successfully minted.
     event WiggyMint(
         address indexed to,
         uint256 indexed tokenId,

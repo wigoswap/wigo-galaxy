@@ -64,7 +64,7 @@ contract Wiggies is ERC721, Ownable {
     }
 
     /**
-     * @dev Mint NFTs. Only the owner can call it.
+     * @dev Mint NFTs. Only the owner can execute it.
      */
     function mint(
         address _to,

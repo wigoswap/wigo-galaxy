@@ -346,7 +346,7 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
             address referralAddress = referrals[
                 residents[_msgSender()].referral
             ].residentAddress;
-            // Send rewards to referral (1/2 Referral Fee)
+            // Send rewards to referral (50% of Referral Fee)
             wigoToken.safeTransfer(
                 referralAddress,
                 (referralFeeShare.mul(numberWigoToUpdate)).div(200)
@@ -410,7 +410,7 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
             address referralAddress = referrals[
                 residents[_msgSender()].referral
             ].residentAddress;
-            // Send rewards to referral (1/2 Referral Fee)
+            // Send rewards to referral (50% of Referral Fee)
             wigoToken.safeTransfer(
                 referralAddress,
                 (referralFeeShare.mul(numberWigoToReactivate)).div(200)

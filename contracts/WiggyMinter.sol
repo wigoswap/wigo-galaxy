@@ -57,7 +57,7 @@ contract WiggyMinter is AccessControl {
 
     /**
      * @dev It transfers the ownership of the NFT contract to a new address.
-     * @dev Only the main admins can set it.
+     * @dev Only the main admins can execute it.
      */
     function changeOwnershipNFTContract(address _newOwner) external onlyOwner {
         wiggies.transferOwnership(_newOwner);
