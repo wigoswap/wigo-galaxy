@@ -346,15 +346,15 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
             address referralAddress = referrals[
                 residents[_msgSender()].referral
             ].residentAddress;
-            // Send rewards to referral
+            // Send rewards to referral (1/2 Referral Fee)
             wigoToken.safeTransfer(
                 referralAddress,
-                (referralFeeShare.mul(numberWigoToUpdate)).div(100)
+                (referralFeeShare.mul(numberWigoToUpdate)).div(200)
             );
 
             // Burn WIGO tokens from this contract
             IMasterFarmer(masterFarmer).wigoBurn(
-                ((100 - referralFeeShare).mul(numberWigoToUpdate)).div(100)
+                ((200 - referralFeeShare).mul(numberWigoToUpdate)).div(200)
             );
         } else {
             // Burn WIGO tokens from this contract
@@ -410,15 +410,15 @@ contract WigoGalaxy is AccessControl, ERC721Holder {
             address referralAddress = referrals[
                 residents[_msgSender()].referral
             ].residentAddress;
-            // Send rewards to referral
+            // Send rewards to referral (1/2 Referral Fee)
             wigoToken.safeTransfer(
                 referralAddress,
-                (referralFeeShare.mul(numberWigoToReactivate)).div(100)
+                (referralFeeShare.mul(numberWigoToReactivate)).div(200)
             );
 
             // Burn WIGO tokens from this contract
             IMasterFarmer(masterFarmer).wigoBurn(
-                ((100 - referralFeeShare).mul(numberWigoToReactivate)).div(100)
+                ((200 - referralFeeShare).mul(numberWigoToReactivate)).div(200)
             );
         } else {
             // Burn WIGO tokens from this contract
