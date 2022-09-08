@@ -13,4 +13,4 @@ coverage.json
 .env
 .DS_Store
 .vscode/
-
+scripts/
