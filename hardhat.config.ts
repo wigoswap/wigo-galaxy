@@ -74,7 +74,7 @@ const config: HardhatUserConfig = {
       chainId: 250,
       live: true,
       saveDeployments: true,
-      gasPrice: 22000000000,
+      gasPrice: 220000000000,
     },
     testnet: {
       url: "https://rpc.testnet.fantom.network",

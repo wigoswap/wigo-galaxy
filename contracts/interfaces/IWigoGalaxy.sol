@@ -20,6 +20,11 @@ interface IWigoGalaxy {
             bool
         );
 
+    function getTotalReferred(address _residentAddress)
+        external
+        view
+        returns (uint256);
+
     function increaseResidentPoints(
         address _residentAddress,
         uint256 _numberPoints,
