@@ -4,29 +4,32 @@ pragma experimental ABIEncoderV2;
 
 import "./OpenZeppelin/access/Ownable.sol";
 import "./OpenZeppelin/math/SafeMath.sol";
+import "./interfaces/IPredict.sol";
 import "./interfaces/IWigoGalaxy.sol";
 import "./interfaces/IWiggyMinter.sol";
 
 /**
- * @title The Ghost
+ * @title The Lord
  * @notice It is a contract for users to mint exclusive
- * Wiggy if they have at least 3 referrals.
+ * Wiggy if they participated in at least 1000 rounds of WigoSwap's Predict mini-game.
  */
-contract TheGhostFactory is Ownable {
+contract TheLordFactory is Ownable {
     using SafeMath for uint256;
 
     IWiggyMinter public wiggyMinter;
     IWigoGalaxy public wigoGalaxy;
+    IPredict public predict;
 
     // WigoGalaxy related
     uint256 public numberPoints;
     uint256 public campaignId;
 
     // WiggyMinter related
-    uint256 public thresholdReferrals;
+    uint256 public endBlockTime;
+    uint256 public thresholdRounds;
     string public tokenURI;
 
-    uint8 public constant wiggyId = 12;
+    uint8 public constant wiggyId = 22;
 
     // Map if address has already claimed a NFT
     mapping(address => bool) public hasClaimed;
@@ -38,16 +41,20 @@ contract TheGhostFactory is Ownable {
     );
 
     constructor(
+        address _predict,
         address _wiggyMinter,
         address _wigoGalaxy,
-        uint256 _thresholdReferrals,
+        uint256 _endBlockTime,
+        uint256 _thresholdRounds,
         uint256 _numberPoints,
         uint256 _campaignId,
         string memory _tokenURI
     ) public {
+        predict = IPredict(_predict);
         wiggyMinter = IWiggyMinter(_wiggyMinter);
         wigoGalaxy = IWigoGalaxy(_wigoGalaxy);
-        thresholdReferrals = _thresholdReferrals;
+        endBlockTime = _endBlockTime;
+        thresholdRounds = _thresholdRounds;
         numberPoints = _numberPoints;
         campaignId = _campaignId;
         tokenURI = _tokenURI;
@@ -58,6 +65,8 @@ contract TheGhostFactory is Ownable {
      * @dev Users can claim once.
      */
     function mintNFT() external {
+        require(block.timestamp <= endBlockTime, "TOO_LATE");
+
         // Check that msg.sender has not claimed
         require(!hasClaimed[msg.sender], "ERR_HAS_CLAIMED");
 
@@ -105,17 +114,14 @@ contract TheGhostFactory is Ownable {
      * @notice Check if a user can claim.
      */
     function _canClaim(address _userAddress) internal view returns (bool) {
-        if (hasClaimed[_userAddress]) {
+        if (hasClaimed[_userAddress] || block.timestamp > endBlockTime) {
             return false;
         } else {
             if (!wigoGalaxy.getResidentStatus(_userAddress)) {
                 return false;
             } else {
-                uint256 totalReferrals = wigoGalaxy.getTotalReferred(
-                    _userAddress
-                );
-
-                if (totalReferrals >= thresholdReferrals) {
+                uint256 length = predict.getUserRoundsLength(_userAddress);
+                if (length >= thresholdRounds) {
                     return true;
                 } else {
                     return false;

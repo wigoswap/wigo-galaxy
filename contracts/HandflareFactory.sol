@@ -4,29 +4,31 @@ pragma experimental ABIEncoderV2;
 
 import "./OpenZeppelin/access/Ownable.sol";
 import "./OpenZeppelin/math/SafeMath.sol";
+import "./interfaces/IMasterFarmer.sol";
 import "./interfaces/IWigoGalaxy.sol";
 import "./interfaces/IWiggyMinter.sol";
 
 /**
- * @title The Ghost
+ * @title Handflare
  * @notice It is a contract for users to mint exclusive
- * Wiggy if they have at least 3 referrals.
+ * Wiggy if they participated in WIGO-FTM & WIGO-USDC farms.
  */
-contract TheGhostFactory is Ownable {
+contract HandflareFactory is Ownable {
     using SafeMath for uint256;
 
     IWiggyMinter public wiggyMinter;
     IWigoGalaxy public wigoGalaxy;
+    IMasterFarmer public masterFarmer;
 
     // WigoGalaxy related
     uint256 public numberPoints;
     uint256 public campaignId;
 
     // WiggyMinter related
-    uint256 public thresholdReferrals;
+    uint256 public thresholdYields;
     string public tokenURI;
 
-    uint8 public constant wiggyId = 12;
+    uint8 public constant wiggyId = 26;
 
     // Map if address has already claimed a NFT
     mapping(address => bool) public hasClaimed;
@@ -38,16 +40,18 @@ contract TheGhostFactory is Ownable {
     );
 
     constructor(
+        address _masterFarmer,
         address _wiggyMinter,
         address _wigoGalaxy,
-        uint256 _thresholdReferrals,
+        uint256 _thresholdYields,
         uint256 _numberPoints,
         uint256 _campaignId,
         string memory _tokenURI
     ) public {
+        masterFarmer = IMasterFarmer(_masterFarmer);
         wiggyMinter = IWiggyMinter(_wiggyMinter);
         wigoGalaxy = IWigoGalaxy(_wigoGalaxy);
-        thresholdReferrals = _thresholdReferrals;
+        thresholdYields = _thresholdYields;
         numberPoints = _numberPoints;
         campaignId = _campaignId;
         tokenURI = _tokenURI;
@@ -111,11 +115,12 @@ contract TheGhostFactory is Ownable {
             if (!wigoGalaxy.getResidentStatus(_userAddress)) {
                 return false;
             } else {
-                uint256 totalReferrals = wigoGalaxy.getTotalReferred(
+                uint256 pendingSftmxFtmRewards = masterFarmer.pendingWigo(
+                    23,
                     _userAddress
                 );
 
-                if (totalReferrals >= thresholdReferrals) {
+                if (pendingSftmxFtmRewards >= thresholdYields) {
                     return true;
                 } else {
                     return false;

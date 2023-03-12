@@ -8,11 +8,10 @@ import "./interfaces/IWigoGalaxy.sol";
 import "./interfaces/IWiggyMinter.sol";
 
 /**
- * @title The Ghost
- * @notice It is a contract for users to mint exclusive
- * Wiggy if they have at least 3 referrals.
+ * @title Santa
+ * @notice Happy xMas 2022 - A gift for all WigoGalaxy residents.
  */
-contract TheGhostFactory is Ownable {
+contract SantaFactory is Ownable {
     using SafeMath for uint256;
 
     IWiggyMinter public wiggyMinter;
@@ -23,10 +22,10 @@ contract TheGhostFactory is Ownable {
     uint256 public campaignId;
 
     // WiggyMinter related
-    uint256 public thresholdReferrals;
+    uint256 public endBlockTime;
     string public tokenURI;
 
-    uint8 public constant wiggyId = 12;
+    uint8 public constant wiggyId = 23;
 
     // Map if address has already claimed a NFT
     mapping(address => bool) public hasClaimed;
@@ -40,14 +39,14 @@ contract TheGhostFactory is Ownable {
     constructor(
         address _wiggyMinter,
         address _wigoGalaxy,
-        uint256 _thresholdReferrals,
+        uint256 _endBlockTime,
         uint256 _numberPoints,
         uint256 _campaignId,
         string memory _tokenURI
     ) public {
         wiggyMinter = IWiggyMinter(_wiggyMinter);
         wigoGalaxy = IWigoGalaxy(_wigoGalaxy);
-        thresholdReferrals = _thresholdReferrals;
+        endBlockTime = _endBlockTime;
         numberPoints = _numberPoints;
         campaignId = _campaignId;
         tokenURI = _tokenURI;
@@ -58,6 +57,8 @@ contract TheGhostFactory is Ownable {
      * @dev Users can claim once.
      */
     function mintNFT() external {
+        require(block.timestamp <= endBlockTime, "TOO_LATE");
+
         // Check that msg.sender has not claimed
         require(!hasClaimed[msg.sender], "ERR_HAS_CLAIMED");
 
@@ -105,21 +106,13 @@ contract TheGhostFactory is Ownable {
      * @notice Check if a user can claim.
      */
     function _canClaim(address _userAddress) internal view returns (bool) {
-        if (hasClaimed[_userAddress]) {
+        if (hasClaimed[_userAddress] || block.timestamp > endBlockTime) {
             return false;
         } else {
-            if (!wigoGalaxy.getResidentStatus(_userAddress)) {
-                return false;
+            if (wigoGalaxy.getResidentStatus(_userAddress)) {
+                return true;
             } else {
-                uint256 totalReferrals = wigoGalaxy.getTotalReferred(
-                    _userAddress
-                );
-
-                if (totalReferrals >= thresholdReferrals) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return false;
             }
         }
     }

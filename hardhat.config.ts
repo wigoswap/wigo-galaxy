@@ -69,12 +69,12 @@ const config: HardhatUserConfig = {
       tags: ["test", "local"],
     },
     mainnet: {
-      url: "https://rpcapi.fantom.network",
+      url: "https://rpc.ankr.com/fantom",
       accounts,
       chainId: 250,
       live: true,
       saveDeployments: true,
-      gasPrice: 220000000000,
+      gasPrice: 500000000000,
     },
     testnet: {
       url: "https://rpc.testnet.fantom.network",

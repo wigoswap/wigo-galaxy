@@ -8,11 +8,11 @@ import "./interfaces/IWigoGalaxy.sol";
 import "./interfaces/IWiggyMinter.sol";
 
 /**
- * @title The Ghost
+ * @title Wishy
  * @notice It is a contract for users to mint exclusive
- * Wiggy if they have at least 3 referrals.
+ * Wiggy for Wigo birthday anniversary
  */
-contract TheGhostFactory is Ownable {
+contract WishyFactory is Ownable {
     using SafeMath for uint256;
 
     IWiggyMinter public wiggyMinter;
@@ -23,10 +23,10 @@ contract TheGhostFactory is Ownable {
     uint256 public campaignId;
 
     // WiggyMinter related
-    uint256 public thresholdReferrals;
+    uint256 public thresholdResidentId;
     string public tokenURI;
 
-    uint8 public constant wiggyId = 12;
+    uint8 public constant wiggyId = 25;
 
     // Map if address has already claimed a NFT
     mapping(address => bool) public hasClaimed;
@@ -40,14 +40,14 @@ contract TheGhostFactory is Ownable {
     constructor(
         address _wiggyMinter,
         address _wigoGalaxy,
-        uint256 _thresholdReferrals,
+        uint256 _thresholdResidentId,
         uint256 _numberPoints,
         uint256 _campaignId,
         string memory _tokenURI
     ) public {
         wiggyMinter = IWiggyMinter(_wiggyMinter);
         wigoGalaxy = IWigoGalaxy(_wigoGalaxy);
-        thresholdReferrals = _thresholdReferrals;
+        thresholdResidentId = _thresholdResidentId;
         numberPoints = _numberPoints;
         campaignId = _campaignId;
         tokenURI = _tokenURI;
@@ -111,11 +111,12 @@ contract TheGhostFactory is Ownable {
             if (!wigoGalaxy.getResidentStatus(_userAddress)) {
                 return false;
             } else {
-                uint256 totalReferrals = wigoGalaxy.getTotalReferred(
+                uint256 residentId;
+                (residentId, , , , , , ) = wigoGalaxy.getResidentProfile(
                     _userAddress
                 );
 
-                if (totalReferrals >= thresholdReferrals) {
+                if (residentId <= thresholdResidentId) {
                     return true;
                 } else {
                     return false;
