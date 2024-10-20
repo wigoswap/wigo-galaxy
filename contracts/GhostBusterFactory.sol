@@ -6,6 +6,7 @@ import "./OpenZeppelin/access/Ownable.sol";
 import "./OpenZeppelin/math/SafeMath.sol";
 import "./interfaces/IWigoGalaxy.sol";
 import "./interfaces/IWiggyMinter.sol";
+import "./interfaces/IRareWiggies.sol";
 
 /**
  * @title GhostBuster
@@ -17,6 +18,7 @@ contract GhostBusterFactory is Ownable {
 
     IWiggyMinter public wiggyMinter;
     IWigoGalaxy public wigoGalaxy;
+    IRareWiggies public rareWiggy;
 
     // WigoGalaxy related
     uint256 public numberPoints;
@@ -44,12 +46,14 @@ contract GhostBusterFactory is Ownable {
     constructor(
         address _wiggyMinter,
         address _wigoGalaxy,
+        address _rareWiggy,
         uint256 _numberPoints,
         uint256 _campaignId,
         string memory _tokenURI
     ) public {
         wiggyMinter = IWiggyMinter(_wiggyMinter);
         wigoGalaxy = IWigoGalaxy(_wigoGalaxy);
+        rareWiggy = IRareWiggies(_rareWiggy);
         numberPoints = _numberPoints;
         campaignId = _campaignId;
         tokenURI = _tokenURI;
@@ -136,18 +140,14 @@ contract GhostBusterFactory is Ownable {
      * @notice Check if a user can claim.
      */
     function _canClaim(address _userAddress) internal view returns (bool) {
-        if (hasClaimed[_userAddress]) {
+        if (hasClaimed[_userAddress] || !wigoGalaxy.getResidentStatus(_userAddress)) {
             return false;
-        } else {
-            if (!wigoGalaxy.getResidentStatus(_userAddress)) {
-                return false;
-            } else {
-                if (isWhitelisted[_userAddress]) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
         }
+        
+        if (rareWiggy.balanceOf(_userAddress) > 0 || isWhitelisted[_userAddress]) {
+            return true;
+        }
+
+        return false;
     }
 }
