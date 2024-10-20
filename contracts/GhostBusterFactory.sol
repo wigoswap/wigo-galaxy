@@ -140,11 +140,19 @@ contract GhostBusterFactory is Ownable {
      * @notice Check if a user can claim.
      */
     function _canClaim(address _userAddress) internal view returns (bool) {
-        if (hasClaimed[_userAddress] || !wigoGalaxy.getResidentStatus(_userAddress)) {
+        if (hasClaimed[_userAddress]) {
+            return false;
+        }
+
+        if (!wigoGalaxy.getResidentStatus(_userAddress)) {
             return false;
         }
         
-        if (rareWiggy.balanceOf(_userAddress) > 0 || isWhitelisted[_userAddress]) {
+        if (rareWiggy.balanceOf(_userAddress) > 0) {
+            return true;
+        }
+
+        if (isWhitelisted[_userAddress]) {
             return true;
         }
 
