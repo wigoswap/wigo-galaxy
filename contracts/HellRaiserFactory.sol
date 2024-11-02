@@ -9,7 +9,7 @@ import "./interfaces/IWiggyMinter.sol";
 import "./interfaces/IRareWiggies.sol";
 
 /**
- * @title HellRaiser
+ * @title HellRaiser Factory
  * @notice It is a contract for users who are currently holding Rare Wiggy No 17, 18, 19
  * to min this Wiggy.
  */
@@ -140,6 +140,7 @@ contract HellRaiserFactory is Ownable {
      * @notice Check if a user can claim.
      */
     function _canClaim(address _userAddress) internal view returns (bool) {
+        
         if (hasClaimed[_userAddress]) {
             return false;
         }

@@ -9,7 +9,7 @@ import "./interfaces/IWiggyMinter.sol";
 import "./interfaces/IRareWiggies.sol";
 
 /**
- * @title GhostBuster
+ * @title GhostBuster Factory
  * @notice It is a contract for users to mint exclusive
  * Wiggy if they are currently holding Rare Wiggy No 20.
  */
@@ -140,6 +140,7 @@ contract ImmortalFactory is Ownable {
      * @notice Check if a user can claim.
      */
     function _canClaim(address _userAddress) internal view returns (bool) {
+        
         if (hasClaimed[_userAddress]) {
             return false;
         }
