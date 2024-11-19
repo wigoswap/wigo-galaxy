@@ -25,7 +25,7 @@ contract MajestyRisingFactory is Ownable {
 
     // WiggyMinter related
     string public tokenURI;
-    uint8 public constant wiggyId = 9;
+    uint8 public constant wiggyId = 43;
 
     event WiggyMint(
         address indexed to,
