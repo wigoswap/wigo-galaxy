@@ -15,6 +15,7 @@ import "./interfaces/IWiggyMinter.sol";
 contract MajestyRisingFactory is Ownable {
     using SafeMath for uint256;
 
+    IWiggyMinter public wiggyMinter;
     IWigoGalaxy public wigoGalaxy;
     IERC20 public token;
 
