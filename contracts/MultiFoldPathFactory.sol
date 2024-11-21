@@ -9,10 +9,10 @@ import "./OpenZeppelin/token/ERC20/IERC20.sol";
 import "./interfaces/IWiggyMinter.sol";
 
 /**
- * @title Fireborn Legacy
- * @notice User has to have at least 100M LUMOS token in its wallet.
+ * @title MultiFold Path
+ * @notice User has to have at least 200M LUMOS token in its wallet.
  */
-contract FirebornLegacyFactory is Ownable {
+contract MultiFoldPathFactory is Ownable {
     using SafeMath for uint256;
 
     IWiggyMinter public wiggyMinter;
@@ -27,7 +27,7 @@ contract FirebornLegacyFactory is Ownable {
     // WiggyMinter related
     uint256 public endBlockTime;
     string public tokenURI;
-    uint8 public constant wiggyId = 44;
+    uint8 public constant wiggyId = 45;
 
     event WiggyMint(
         address indexed to,
