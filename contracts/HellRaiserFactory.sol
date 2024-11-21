@@ -25,6 +25,7 @@ contract HellRaiserFactory is Ownable {
     uint256 public campaignId;
 
     // WiggyMinter related
+    uint256 public endBlockTime;
     string public tokenURI;
     uint8 public constant wiggyId = 41;
 
@@ -46,6 +47,7 @@ contract HellRaiserFactory is Ownable {
     constructor(
         address _wiggyMinter,
         address _wigoGalaxy,
+        uint256 _endBlockTime,
         address _rareWiggy,
         uint256 _numberPoints,
         uint256 _campaignId,
@@ -53,6 +55,7 @@ contract HellRaiserFactory is Ownable {
     ) public {
         wiggyMinter = IWiggyMinter(_wiggyMinter);
         wigoGalaxy = IWigoGalaxy(_wigoGalaxy);
+        endBlockTime = _endBlockTime;
         rareWiggy = IRareWiggies(_rareWiggy);
         numberPoints = _numberPoints;
         campaignId = _campaignId;
@@ -93,6 +96,9 @@ contract HellRaiserFactory is Ownable {
      * @dev Users can claim once.
      */
     function mintNFT() external {
+        // Checking whether quest is expired or not
+        require(block.timestamp <= endBlockTime, "TOO_LATE");
+
         // Check that msg.sender has not claimed
         require(!hasClaimed[msg.sender], "ERR_HAS_CLAIMED");
 
