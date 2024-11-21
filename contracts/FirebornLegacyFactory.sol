@@ -9,10 +9,10 @@ import "./OpenZeppelin/token/ERC20/IERC20.sol";
 import "./interfaces/IWiggyMinter.sol";
 
 /**
- * @title Fireburn Legacy
+ * @title Fireborn Legacy
  * @notice User has to have at least 100M LUMOS token in its wallet.
  */
-contract FireburnLegalcyFactory is Ownable {
+contract FirebornLegalcyFactory is Ownable {
     using SafeMath for uint256;
 
     IWiggyMinter public wiggyMinter;
