@@ -27,7 +27,7 @@ contract HellRaiserFactory is Ownable {
     // WiggyMinter related
     uint256 public endBlockTime;
     string public tokenURI;
-    uint8 public constant wiggyId = 41;
+    uint8 public constant wiggyId = 47;
 
     // Map if address has already claimed a NFT
     mapping(address => bool) public hasClaimed;
@@ -147,7 +147,7 @@ contract HellRaiserFactory is Ownable {
      */
     function _canClaim(address _userAddress) internal view returns (bool) {
         
-        if (hasClaimed[_userAddress]) {
+        if (hasClaimed[_userAddress] || block.timestamp > endBlockTime) {
             return false;
         }
 

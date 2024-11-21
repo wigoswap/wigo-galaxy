@@ -26,7 +26,7 @@ contract ImmortalFactory is Ownable {
 
     // WiggyMinter related
     string public tokenURI;
-    uint8 public constant wiggyId = 47;
+    uint8 public constant wiggyId = 42;
 
     // Map if address has already claimed a NFT
     mapping(address => bool) public hasClaimed;
@@ -141,7 +141,7 @@ contract ImmortalFactory is Ownable {
      */
     function _canClaim(address _userAddress) internal view returns (bool) {
         
-        if (hasClaimed[_userAddress] || block.timestamp > endBlockTime) {
+        if (hasClaimed[_userAddress]) {
             return false;
         }
 
