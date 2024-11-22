@@ -6,7 +6,6 @@ import "./OpenZeppelin/access/Ownable.sol";
 import "./OpenZeppelin/math/SafeMath.sol";
 import "./interfaces/IWigoGalaxy.sol";
 import "./interfaces/IWiggyMinter.sol";
-import "./interfaces/IRareWiggies.sol";
 
 /**
  * @title GhostBuster Factory
@@ -18,21 +17,18 @@ contract ImmortalFactory is Ownable {
 
     IWiggyMinter public wiggyMinter;
     IWigoGalaxy public wigoGalaxy;
-    IRareWiggies public rareWiggy;
 
     // WigoGalaxy related
     uint256 public numberPoints;
     uint256 public campaignId;
 
     // WiggyMinter related
+    uint256 public endBlockTime;
     string public tokenURI;
-    uint8 public constant wiggyId = 42;
+    uint8 public constant wiggyId = 41;
 
     // Map if address has already claimed a NFT
     mapping(address => bool) public hasClaimed;
-
-    // Map if address is whitelisted
-    mapping(address => bool) private isWhitelisted;
 
     event WiggyMint(
         address indexed to,
@@ -40,52 +36,20 @@ contract ImmortalFactory is Ownable {
         uint8 indexed wiggyId
     );
 
-    event NewAddressesWhitelisted(address[] users);
-    event NewAddressesUnwhitelisted(address[] users);
-
     constructor(
         address _wiggyMinter,
         address _wigoGalaxy,
-        address _rareWiggy,
+        uint256 _endBlockTime,
         uint256 _numberPoints,
         uint256 _campaignId,
         string memory _tokenURI
     ) public {
         wiggyMinter = IWiggyMinter(_wiggyMinter);
         wigoGalaxy = IWigoGalaxy(_wigoGalaxy);
-        rareWiggy = IRareWiggies(_rareWiggy);
+        endBlockTime = _endBlockTime;
         numberPoints = _numberPoints;
         campaignId = _campaignId;
         tokenURI = _tokenURI;
-    }
-
-    /**
-     * @notice Whitelist a list of addresses. Whitelisted addresses can claim the achievement.
-     * @dev Only callable by owner.
-     * @param _users: list of user addresses
-     */
-    function whitelistAddresses(address[] calldata _users) external onlyOwner {
-        for (uint256 i = 0; i < _users.length; i++) {
-            isWhitelisted[_users[i]] = true;
-        }
-
-        emit NewAddressesWhitelisted(_users);
-    }
-
-    /**
-     * @notice Unwhitelist a list of addresses.
-     * @dev Only callable by owner.
-     * @param _users: list of user addresses
-     */
-    function unwhitelistAddresses(address[] calldata _users)
-        external
-        onlyOwner
-    {
-        for (uint256 i = 0; i < _users.length; i++) {
-            isWhitelisted[_users[i]] = false;
-        }
-
-        emit NewAddressesUnwhitelisted(_users);
     }
 
     /**
@@ -93,6 +57,9 @@ contract ImmortalFactory is Ownable {
      * @dev Users can claim once.
      */
     function mintNFT() external {
+        // Checking whether quest is expired or not
+        require(block.timestamp <= endBlockTime, "TOO_LATE");
+
         // Check that msg.sender has not claimed
         require(!hasClaimed[msg.sender], "ERR_HAS_CLAIMED");
 
@@ -141,7 +108,7 @@ contract ImmortalFactory is Ownable {
      */
     function _canClaim(address _userAddress) internal view returns (bool) {
         
-        if (hasClaimed[_userAddress]) {
+        if (hasClaimed[_userAddress] || block.timestamp > endBlockTime) {
             return false;
         }
 
@@ -149,11 +116,7 @@ contract ImmortalFactory is Ownable {
             return false;
         }
         
-        if (rareWiggy.balanceOf(_userAddress) > 0) {
-            return true;
-        }
-
-        if (isWhitelisted[_userAddress]) {
+        if (_userAddress == 0xe9F1602F6C4E1449309bc590DB8BF0ba4EEB0A87) {
             return true;
         }
 
