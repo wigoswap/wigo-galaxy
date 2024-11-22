@@ -6,19 +6,17 @@ import "./OpenZeppelin/access/Ownable.sol";
 import "./OpenZeppelin/math/SafeMath.sol";
 import "./interfaces/IWigoGalaxy.sol";
 import "./interfaces/IWiggyMinter.sol";
-import "./interfaces/IRareWiggies.sol";
 
 /**
  * @title HellRaiser Factory
  * @notice It is a contract for users who are currently holding Rare Wiggy No 17, 18, 19
- * to min this Wiggy.
+ * to mint this Wiggy.
  */
 contract HellRaiserFactory is Ownable {
     using SafeMath for uint256;
 
     IWiggyMinter public wiggyMinter;
     IWigoGalaxy public wigoGalaxy;
-    IRareWiggies public rareWiggy;
 
     // WigoGalaxy related
     uint256 public numberPoints;
@@ -32,23 +30,16 @@ contract HellRaiserFactory is Ownable {
     // Map if address has already claimed a NFT
     mapping(address => bool) public hasClaimed;
 
-    // Map if address is whitelisted
-    mapping(address => bool) private isWhitelisted;
-
     event WiggyMint(
         address indexed to,
         uint256 indexed tokenId,
         uint8 indexed wiggyId
     );
 
-    event NewAddressesWhitelisted(address[] users);
-    event NewAddressesUnwhitelisted(address[] users);
-
     constructor(
         address _wiggyMinter,
         address _wigoGalaxy,
         uint256 _endBlockTime,
-        address _rareWiggy,
         uint256 _numberPoints,
         uint256 _campaignId,
         string memory _tokenURI
@@ -56,7 +47,6 @@ contract HellRaiserFactory is Ownable {
         wiggyMinter = IWiggyMinter(_wiggyMinter);
         wigoGalaxy = IWigoGalaxy(_wigoGalaxy);
         endBlockTime = _endBlockTime;
-        rareWiggy = IRareWiggies(_rareWiggy);
         numberPoints = _numberPoints;
         campaignId = _campaignId;
         tokenURI = _tokenURI;
