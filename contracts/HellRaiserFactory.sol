@@ -63,35 +63,6 @@ contract HellRaiserFactory is Ownable {
     }
 
     /**
-     * @notice Whitelist a list of addresses. Whitelisted addresses can claim the achievement.
-     * @dev Only callable by owner.
-     * @param _users: list of user addresses
-     */
-    function whitelistAddresses(address[] calldata _users) external onlyOwner {
-        for (uint256 i = 0; i < _users.length; i++) {
-            isWhitelisted[_users[i]] = true;
-        }
-
-        emit NewAddressesWhitelisted(_users);
-    }
-
-    /**
-     * @notice Unwhitelist a list of addresses.
-     * @dev Only callable by owner.
-     * @param _users: list of user addresses
-     */
-    function unwhitelistAddresses(address[] calldata _users)
-        external
-        onlyOwner
-    {
-        for (uint256 i = 0; i < _users.length; i++) {
-            isWhitelisted[_users[i]] = false;
-        }
-
-        emit NewAddressesUnwhitelisted(_users);
-    }
-
-    /**
      * @notice Mint a Wiggy from the WiggyMinter contract.
      * @dev Users can claim once.
      */
@@ -155,7 +126,10 @@ contract HellRaiserFactory is Ownable {
             return false;
         }
 
-        if (isWhitelisted[_userAddress]) {
+       if (
+        _userAddress == 0x424e5AF4A2FB8933f1d31cc5b00B105049a9A09d ||
+        _userAddress == 0x035035Ad4506712c7c30184D706661ff8b7A0a12 ||
+        _userAddress == 0xe9F1602F6C4E1449309bc590DB8BF0ba4EEB0A87) {
             return true;
         }
 
