@@ -27,7 +27,7 @@ contract HellRaiserFactory is Ownable {
     // WiggyMinter related
     uint256 public endBlockTime;
     string public tokenURI;
-    uint8 public constant wiggyId = 47;
+    uint8 public constant wiggyId = 42;
 
     // Map if address has already claimed a NFT
     mapping(address => bool) public hasClaimed;
