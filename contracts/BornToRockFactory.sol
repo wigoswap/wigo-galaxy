@@ -21,6 +21,7 @@ contract BornToRockFactory is Ownable {
     IERC20 public token2;
 
     // WigoGalaxy related
+    uint256 public endBlockTime;
     uint256 public numberPoints;
     uint256 public campaignId;
     uint256 public thresholdBalanceToken1;
@@ -46,6 +47,7 @@ contract BornToRockFactory is Ownable {
         address _wigoGalaxy,
         IERC20 _token1,
         IERC20 _token2,
+        uint256 _endBlockTime,
         uint256 _thresholdBalanceToken1,
         uint256 _thresholdBalanceToken2,
         uint256 _numberPoints,
@@ -56,6 +58,7 @@ contract BornToRockFactory is Ownable {
         wigoGalaxy = IWigoGalaxy(_wigoGalaxy);
         token1 = _token1;
         token2 = _token2;
+        endBlockTime = _endBlockTime;
         thresholdBalanceToken1 = _thresholdBalanceToken1;
         thresholdBalanceToken2 = _thresholdBalanceToken2;
         numberPoints = _numberPoints;
@@ -68,6 +71,8 @@ contract BornToRockFactory is Ownable {
      * @dev Users can claim once.
      */
     function mintNFT() external {
+        require(block.timestamp <= endBlockTime, "TOO_LATE");
+
         // Check that msg.sender has not claimed
         require(!hasClaimed[msg.sender], "ERR_HAS_CLAIMED");
 
@@ -116,13 +121,16 @@ contract BornToRockFactory is Ownable {
      * @notice Check if a user can claim.
      */
     function _canClaim(address _userAddress) internal view returns (bool) {
-        if (hasClaimed[_userAddress]) {
+        if (hasClaimed[_userAddress] || block.timestamp > endBlockTime) {
             return false;
         } else {
             if (!wigoGalaxy.getResidentStatus(_userAddress)) {
                 return false;
             } else {
-                if (token1.balanceOf(_userAddress) >= thresholdBalanceToken1 && token2.balanceOf(_userAddress) >= thresholdBalanceToken2) {
+                if (
+                    token1.balanceOf(_userAddress) >= thresholdBalanceToken1 &&
+                    token2.balanceOf(_userAddress) >= thresholdBalanceToken2
+                ) {
                     return true;
                 } else {
                     return false;
