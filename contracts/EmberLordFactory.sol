@@ -9,10 +9,10 @@ import "./OpenZeppelin/token/ERC20/IERC20.sol";
 import "./interfaces/IWiggyMinter.sol";
 
 /**
- * @title The Dark Sovereign
- * @notice User has to have at least 300 BRUSH token (token1) and 5M LUMOS token (token2) in its wallet.
+ * @title Emberlord
+ * @notice User has to have at least 500 $SNS and 5M $LUMOS in their wallets to be eligible to claim the rewards.
  */
-contract DarkSovereign is Ownable {
+contract EmberLordFactory is Ownable {
     using SafeMath for uint256;
 
     IWiggyMinter public wiggyMinter;
@@ -29,7 +29,7 @@ contract DarkSovereign is Ownable {
 
     // WiggyMinter related
     string public tokenURI;
-    uint8 public constant wiggyId = 49;
+    uint8 public constant wiggyId = 50;
 
     event WiggyMint(
         address indexed to,
